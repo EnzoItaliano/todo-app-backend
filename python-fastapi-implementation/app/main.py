@@ -1,8 +1,9 @@
 # app/main.py
+import sys
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import models, schemas, database
-from .authy import RoleChecker, get_password_hash, verify_password, create_access_token
+from app import models, schemas, database
+from app.authy import RoleChecker, get_password_hash, verify_password, create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import status
 
@@ -11,7 +12,8 @@ from fastapi import status
 app = FastAPI(title="To-Do API - Python Edition")
 
 # Create database tables (Equivalent to db.sequelize.sync in your Node version)
-models.Base.metadata.create_all(bind=database.engine)
+if __name__ == "__main__" or "pytest" not in sys.modules:
+    models.Base.metadata.create_all(bind=database.engine)
 
 # Registration Endpoint
 @app.post("/api/register", response_model=schemas.User)
